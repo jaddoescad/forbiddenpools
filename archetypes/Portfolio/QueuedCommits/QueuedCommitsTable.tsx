@@ -12,13 +12,12 @@ export const QueuedCommitsTable = ({ commits }: { commits: QueuedCommit[] }): JS
             <TableHeader>
                 <OverviewHeaderRow>
                     <TableHeaderCell>From</TableHeaderCell>
-                    <TableHeaderCell colSpan={4} />
+                    <TableHeaderCell colSpan={3} />
                     <TableHeaderCell>To</TableHeaderCell>
                     <TableHeaderCell colSpan={4} />
                 </OverviewHeaderRow>
                 <OverviewHeaderRow>
                     <TableHeaderCell>Type</TableHeaderCell>
-                    <TableHeaderCell>Pool Status</TableHeaderCell>
                     <TableHeaderCell>Amount</TableHeaderCell>
                     <TableHeaderCell>Token In</TableHeaderCell>
                     <TableHeaderCell>{/* Empty cell for arrow */}</TableHeaderCell>

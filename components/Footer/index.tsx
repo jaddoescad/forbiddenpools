@@ -31,7 +31,6 @@ const Footer: React.FC = () => {
                         href="https://pools.docs.tracer.finance"
                         target="_blank"
                         rel="noreferrer"
-                        aria-label="Gitbook link"
                     >
                         <GitbookLogo className="w-7" />
                     </a>
@@ -40,7 +39,6 @@ const Footer: React.FC = () => {
                         href="https://discourse.tracer.finance"
                         target="_blank"
                         rel="noreferrer"
-                        aria-label="Discourse link"
                     >
                         <DiscourseLogo className="w-7" />
                     </a>
@@ -49,7 +47,6 @@ const Footer: React.FC = () => {
                         href="https://twitter.com/TracerDAO"
                         target="_blank"
                         rel="noreferrer"
-                        aria-label="Twitter link"
                     >
                         <TwitterLogo className="w-7" />
                     </a>
@@ -58,7 +55,6 @@ const Footer: React.FC = () => {
                         href="https://github.com/tracer-protocol/perpetual-pools-contracts"
                         target="_blank"
                         rel="noreferrer"
-                        aria-label="Github link"
                     >
                         <GitHubLogo className="w-7" />
                     </a>
@@ -67,7 +63,6 @@ const Footer: React.FC = () => {
                         href="https://discord.com/invite/kddBUqDVVb"
                         target="_blank"
                         rel="noreferrer"
-                        aria-label="Discord link"
                     >
                         <DiscordLogo className="w-7" />
                     </a>

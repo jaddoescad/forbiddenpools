@@ -7,7 +7,6 @@ export enum KnownPoolsInitialisationErrors {
     ProviderNotReady = 'Provider not ready',
     NetworkNotSupported = 'Network not supported',
     NoPools = 'No pools found',
-    ExceededMaxRetryCount = 'Exceeded max retry count',
 }
 
 export interface IPoolsInstancesSlice {

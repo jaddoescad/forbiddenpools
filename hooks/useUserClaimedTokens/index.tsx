@@ -10,6 +10,7 @@ export const useUserClaimedTokens = (): LoadingRows<ClaimedTokenRowProps> => {
     const { pools, isLoadingPools } = usePools();
     const farmBalances = useFarmBalances();
     const [rows, setRows] = useState<ClaimedTokenRowProps[]>([]);
+
     useEffect(() => {
         if (pools) {
             const poolValues = Object.values(pools);
@@ -46,7 +47,6 @@ export const useUserClaimedTokens = (): LoadingRows<ClaimedTokenRowProps> => {
                         entryPrice: userBalances.tradeStats.avgShortEntryPriceWallet,
                         settlementTokenSymbol: poolInstance.settlementToken.symbol,
                         stakedTokens: shortStaked,
-                        expectedExecution: pools[address].upkeepInfo.expectedExecution,
                         poolStatus,
                     });
                 }
@@ -66,7 +66,6 @@ export const useUserClaimedTokens = (): LoadingRows<ClaimedTokenRowProps> => {
                         entryPrice: userBalances.tradeStats.avgLongEntryPriceWallet,
                         settlementTokenSymbol: poolInstance.settlementToken.symbol,
                         stakedTokens: longStaked,
-                        expectedExecution: pools[address].upkeepInfo.expectedExecution,
                         poolStatus,
                     });
                 }

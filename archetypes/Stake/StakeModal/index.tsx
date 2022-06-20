@@ -9,14 +9,13 @@ import { Input as NumericInput } from '~/components/General/Input/Numeric';
 import Max from '~/components/General/Max';
 import { TWModal } from '~/components/General/TWModal';
 import { useFarms } from '~/context/FarmContext';
-import { getBaseAsset } from '~/utils/poolNames';
 import { StakeAction, StakeState } from '../state';
-
 interface StakeModalProps {
     state: StakeState;
     dispatch: React.Dispatch<StakeAction>;
     onStake: (farmAddress: string, amount: BigNumber) => void;
     onApprove: (farmAddress: string) => void;
+    title: string;
     btnLabel: string;
 }
 
@@ -38,7 +37,7 @@ const isInvalidAmount: (amount: BigNumber, balance: BigNumber) => { isInvalid: b
     };
 };
 
-const StakeModal: React.FC<StakeModalProps> = ({ state, dispatch, onStake, onApprove, btnLabel }) => {
+const StakeModal: React.FC<StakeModalProps> = ({ state, dispatch, onStake, onApprove, title, btnLabel }) => {
     const { amount, selectedFarm, invalidAmount, stakeModalBalance, maxDecimals } = state;
     const { farms } = useFarms();
 
@@ -67,7 +66,7 @@ const StakeModal: React.FC<StakeModalProps> = ({ state, dispatch, onStake, onApp
             onClose={() => dispatch({ type: 'setStakeModalState', state: 'closed' })}
         >
             <div className="flex justify-between pb-6">
-                <div className="text-2xl font-bold">Stake Tokens</div>
+                <div className="text-2xl font-bold">{title || 'Stake Tracer Pool Tokens'}</div>
                 {/* <Gas /> */}
                 <div
                     className="ml-4 h-3 w-3 cursor-pointer"
@@ -92,9 +91,7 @@ const StakeModal: React.FC<StakeModalProps> = ({ state, dispatch, onStake, onApp
                         <InnerInputText>
                             <Currency
                                 label={farm?.name}
-                                ticker={tokenSymbolToLogoTicker(
-                                    farm.isBPTFarm ? getBaseAsset(farm.poolDetails.name) : farm.name,
-                                )}
+                                ticker={tokenSymbolToLogoTicker(farm?.name)}
                                 className="shadow-md"
                             />
                             <Max

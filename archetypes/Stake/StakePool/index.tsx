@@ -9,8 +9,9 @@ export default (() => {
     return (
         <>
             <StakeGeneric
-                title="Stake Tokens"
-                subTitle="Stake Tokens and earn rewards."
+                title="Stake Tracer Pool Tokens"
+                subTitle="Stake Tracer Pool Tokens and earn rewards."
+                tokenType="Tracer Pool"
                 refreshFarm={refreshFarm}
                 farms={farms}
                 fetchingFarms={fetchingFarms}

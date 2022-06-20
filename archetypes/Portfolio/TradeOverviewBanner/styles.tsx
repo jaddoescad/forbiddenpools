@@ -23,6 +23,14 @@ export const Banner = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+
+    @media ${({ theme }) => theme.device.xl} {
+        width: 75%;
+
+        &.empty-state {
+            width: 50%;
+        }
+    }
 `;
 
 export const BannerContent = styled.div`

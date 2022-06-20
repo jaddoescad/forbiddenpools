@@ -6,8 +6,7 @@ import { Logo, tokenSymbolToLogoTicker } from '~/components/General/Logo';
 import { TWModal } from '~/components/General/TWModal';
 import { Table, TableHeader, TableHeaderCell, TableRow, TableRowCell } from '~/components/General/TWTable';
 import { PoolStatusBadge, PoolStatusBadgeContainer } from '~/components/PoolStatusBadge';
-import { RewardsEndedTip, StakingTvlTip } from '~/components/Tooltips';
-import { getBaseAsset } from '~/utils/poolNames';
+import { RewardsEndedTip } from '~/components/Tooltips';
 import { toApproxCurrency } from '~/utils/converters';
 import { FarmTableRowData } from '../state';
 import Close from '/public/img/general/close.svg';
@@ -21,32 +20,27 @@ export default (({ rows, onClickStake, onClickUnstake, onClickClaim, fetchingFar
                 <TableHeader className="uppercase">
                     <tr>
                         <TableHeaderCell>Strategy</TableHeaderCell>
+                        <TableHeaderCell>Status</TableHeaderCell>
                         <TableHeaderCell>APR</TableHeaderCell>
-                        <TableHeaderCell>
-                            <StakingTvlTip>
-                                <div>TVL (USD)</div>
-                            </StakingTvlTip>
-                        </TableHeaderCell>
+                        <TableHeaderCell>TVL (USD)</TableHeaderCell>
                         <TableHeaderCell>My Staked (TOKENS/USD)</TableHeaderCell>
                         <TableHeaderCell>My Holdings (TOKENS/USD)</TableHeaderCell>
                         <TableHeaderCell>My Rewards (TCR)</TableHeaderCell>
                         <TableHeaderCell>{/* Empty header for buttons column */}</TableHeaderCell>
                     </tr>
                 </TableHeader>
-                <tbody>
-                    {rows.map((farm) => {
-                        return (
-                            <PoolRow
-                                key={`${farm.farm}`}
-                                farm={farm}
-                                rewardsTokenUSDPrices={rewardsTokenUSDPrices}
-                                onClickClaim={onClickClaim}
-                                onClickStake={onClickStake}
-                                onClickUnstake={onClickUnstake}
-                            />
-                        );
-                    })}
-                </tbody>
+                {rows.map((farm) => {
+                    return (
+                        <PoolRow
+                            key={`${farm.farm}`}
+                            farm={farm}
+                            rewardsTokenUSDPrices={rewardsTokenUSDPrices}
+                            onClickClaim={onClickClaim}
+                            onClickStake={onClickStake}
+                            onClickUnstake={onClickUnstake}
+                        />
+                    );
+                })}
             </Table>
             {fetchingFarms ? <Loading className="mx-auto my-8 w-10" /> : null}
             <TWModal open={showModal} onClose={() => setShowModal(false)}>
@@ -107,66 +101,55 @@ const PoolRow: React.FC<{
     onClickUnstake: (farmAddress: string) => void;
     onClickClaim: (farmAddress: string) => void;
 }> = ({ farm, onClickStake, onClickUnstake, onClickClaim, rewardsTokenUSDPrices }) => {
-    const stakingTokenPrice = useMemo(() => farm.stakingTokenPrice || new BigNumber(1), [farm]);
+    const tokenPrice = useMemo(() => farm.poolDetails.poolTokenPrice, [farm]);
 
     const rewardsTokenPrice = rewardsTokenUSDPrices[farm.rewardsTokenAddress] || new BigNumber(0);
 
     const apr = useMemo(() => {
         const aprNumerator = farm.rewardsPerYear.times(rewardsTokenPrice);
-        const aprDenominator = stakingTokenPrice.times(farm.totalStaked);
+        const aprDenominator = tokenPrice.times(farm.totalStaked);
         return aprDenominator.gt(0) ? aprNumerator.div(aprDenominator) : new BigNumber(0);
-    }, [stakingTokenPrice, farm.totalStaked, farm.rewardsPerYear, rewardsTokenPrice]);
+    }, [tokenPrice, farm.totalStaked, farm.rewardsPerYear, rewardsTokenPrice]);
 
     return (
         <TableRow key={farm.farm} lined>
             <TableRowCell>
+                <div className="inline">
+                    <Logo className="mr-2 inline" size="md" ticker={tokenSymbolToLogoTicker(farm.name)} />
+                </div>
+                <div className="inline-flex flex-col justify-center">
+                    {farm.link ? (
+                        <>
+                            <a className="flex" href={farm.link} target="_blank" rel="noopener noreferrer">
+                                {farm.name}
+                            </a>
+                            <a className="flex opacity-50" href={farm.link} target="_blank" rel="noopener noreferrer">
+                                {farm.linkText || '(click to view pool)'}
+                            </a>
+                        </>
+                    ) : (
+                        <div>{farm.name}</div>
+                    )}
+                </div>
+            </TableRowCell>
+            <TableRowCell>
                 <PoolStatusBadgeContainer>
-                    <div className="inline self-center">
-                        <Logo
-                            className="mr-2 inline"
-                            size="md"
-                            ticker={tokenSymbolToLogoTicker(
-                                farm.isBPTFarm ? getBaseAsset(farm.poolDetails.name) : farm.name,
-                            )}
-                        />
-                    </div>
-                    <div className="mr-2 inline-flex flex-col justify-center">
-                        {farm.link ? (
-                            <>
-                                <a className="flex" href={farm.link} target="_blank" rel="noopener noreferrer">
-                                    {farm.name}
-                                </a>
-                                <a
-                                    className="flex opacity-50"
-                                    href={farm.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {farm.linkText || '(click to view pool)'}
-                                </a>
-                            </>
-                        ) : (
-                            <div>{farm.name}</div>
-                        )}
-                    </div>
-                    <div className="self-center">
-                        <PoolStatusBadge status={farm.poolDetails.status} />
-                    </div>
+                    <PoolStatusBadge status={farm.poolDetails.status} />
                 </PoolStatusBadgeContainer>
             </TableRowCell>
             <TableRowCell>
                 {farm.rewardsEnded ? <RewardsEndedTip>N/A</RewardsEndedTip> : `${largeDecimal(apr)}%`}
             </TableRowCell>
             <TableRowCell>
-                <div>{toApproxCurrency(stakingTokenPrice.times(farm.totalStaked))}</div>
+                <TableRowCell>{toApproxCurrency(tokenPrice.times(farm.totalStaked))}</TableRowCell>
             </TableRowCell>
             <TableRowCell>
                 <div>{farm.myStaked.toFixed(2)}</div>
-                <div className="opacity-50">{toApproxCurrency(stakingTokenPrice.times(farm.myStaked))}</div>
+                <div className="opacity-50">{toApproxCurrency(tokenPrice.times(farm.myStaked))}</div>
             </TableRowCell>
             <TableRowCell>
                 <div>{farm.stakingTokenBalance.toFixed(2)}</div>
-                <div className="opacity-50">{toApproxCurrency(stakingTokenPrice.times(farm.stakingTokenBalance))}</div>
+                <div className="opacity-50">{toApproxCurrency(tokenPrice.times(farm.stakingTokenBalance))}</div>
             </TableRowCell>
             <TableRowCell>
                 <span>{farm.myRewards.toFixed(6)}</span>

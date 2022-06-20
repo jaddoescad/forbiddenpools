@@ -1,40 +1,26 @@
 import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
-import { LeveragedPool__factory, ERC20__factory } from '@tracer-protocol/perpetual-pools-contracts/types';
-import { StaticPoolInfo } from '@tracer-protocol/pools-js/entities/pool';
+import Pool, { StaticPoolInfo } from '@tracer-protocol/pools-js/entities/pool';
 
-export const fetchPPTokenPrice: (
+export const fetchTokenPrice: (
     poolInfo: StaticPoolInfo,
     tokenAddress: string,
     provider: ethers.providers.JsonRpcProvider | undefined,
-) => Promise<BigNumber> = async (poolInfo, tokenAddress, provider) => {
-    if (!provider || !poolInfo) {
+) => Promise<BigNumber> = async (poolInfo_, tokenAddress, provider) => {
+    if (!provider || !poolInfo_) {
         return new BigNumber(1);
     }
 
     try {
-        const leveragedPool = LeveragedPool__factory.connect(poolInfo.address, provider);
-        const token = ERC20__factory.connect(tokenAddress, provider);
-
-        if (!poolInfo.longToken || !poolInfo.shortToken) {
-            return new BigNumber(1);
-        }
+        const poolInfo = await Pool.Create({
+            ...poolInfo_,
+            provider,
+        });
 
         const isLong: boolean = tokenAddress.toLowerCase() === poolInfo.longToken.address.toLowerCase();
-
-        const [sideBalance, tokenSupply] = await Promise.all([
-            isLong ? leveragedPool.longBalance() : leveragedPool.shortBalance(),
-            token.totalSupply(),
-        ]);
-
-        // catch div by 0
-        if (tokenSupply.eq(0)) {
-            return new BigNumber(1);
-        }
-
-        return new BigNumber(sideBalance.toString()).div(tokenSupply.toString());
+        return isLong ? poolInfo.getNextLongTokenPrice() : poolInfo.getNextShortTokenPrice();
     } catch (err) {
-        console.error('Failed to fetch PP token price');
+        console.error('Failed to fetch farm token prices');
         return new BigNumber(1);
     }
 };

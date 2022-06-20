@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Popover } from 'react-tiny-popover';
-import shallow from 'zustand/shallow';
 import { KnownNetwork, NETWORKS } from '@tracer-protocol/pools-js';
 import { Logo, LogoTicker } from '~/components/General';
 import More from '~/public/img/general/more.svg';
 import { useStore } from '~/store/main';
 import { selectProvider } from '~/store/Web3Slice';
-import { selectWeb3Info } from '~/store/Web3Slice';
 import { BlockExplorerAddressType } from '~/types/blockExplorers';
-import { constructBalancerLink } from '~/utils/balancer';
 import { openBlockExplorer } from '~/utils/blockExplorers';
 import { watchAsset } from '~/utils/rpcMethods';
 
@@ -34,10 +31,9 @@ export const TokenActions = ({
         text: string;
     }[];
 }): JSX.Element => {
-    const { network } = useStore(selectWeb3Info, shallow);
     const provider = useStore(selectProvider);
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const buttonStyles = 'flex cursor-pointer items-center p-2 text-sm hover:bg-theme-button-bg-hover w-full';
+
     return (
         <Popover
             isOpen={isOpen}
@@ -46,25 +42,17 @@ export const TokenActions = ({
             onClickOutside={() => setIsOpen(false)}
             content={
                 <div onClick={() => setIsOpen(!isOpen)}>
-                    <div className="focus:outline-none z-10 mt-2 w-[180px] origin-top-right divide-y divide-theme-border overflow-hidden rounded-lg bg-theme-background shadow-lg ring-1 ring-black ring-opacity-5">
-                        <button className={buttonStyles} onClick={() => watchAsset(provider, token)}>
-                            <PlusOutlined className="relative ml-1 mr-[11px] inline h-[12px]" />
+                    <div className="focus:outline-none z-10 mt-2 w-56 origin-top-right divide-y divide-theme-border rounded-lg bg-theme-background shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div
+                            className="flex cursor-pointer items-center p-2 text-sm hover:bg-theme-button-bg-hover"
+                            onClick={() => watchAsset(provider, token)}
+                        >
+                            <PlusOutlined className="relative mr-2 inline h-[12px]" />
                             Add token to wallet
-                        </button>
-                        {network === NETWORKS.ARBITRUM && (
-                            <button
-                                className={buttonStyles}
-                                onClick={() =>
-                                    open(constructBalancerLink(token.address, NETWORKS.ARBITRUM, true), 'blank')
-                                }
-                            >
-                                <Logo className="relative mr-2 inline" ticker={'BALANCER'} />
-                                Trade on Balancer
-                            </button>
-                        )}
+                        </div>
                         {arbiscanTarget ? (
-                            <button
-                                className={buttonStyles}
+                            <div
+                                className="flex cursor-pointer items-center p-2 text-sm hover:bg-theme-button-bg-hover"
                                 onClick={() =>
                                     openBlockExplorer(
                                         arbiscanTarget.type,
@@ -75,13 +63,13 @@ export const TokenActions = ({
                             >
                                 <Logo className="relative mr-2 inline" ticker={NETWORKS.ARBITRUM} />
                                 View on Arbiscan
-                            </button>
+                            </div>
                         ) : null}
                         {otherActions
                             ? otherActions.map((action) => (
-                                  <button
+                                  <div
                                       key={action.text}
-                                      className={buttonStyles}
+                                      className="flex cursor-pointer items-center p-2 text-sm hover:bg-theme-button-bg-hover"
                                       onClick={() =>
                                           openBlockExplorer(
                                               action.type,
@@ -92,7 +80,7 @@ export const TokenActions = ({
                                   >
                                       <Logo className="relative mr-2 inline" ticker={action.logo} />
                                       {action.text}
-                                  </button>
+                                  </div>
                               ))
                             : null}
                     </div>

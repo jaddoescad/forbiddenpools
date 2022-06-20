@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { CommitActionEnum } from '@tracer-protocol/pools-js';
 import { TableRow } from '~/components/General/TWTable';
-import { PoolStatusBadge, PoolStatusBadgeContainer } from '~/components/PoolStatusBadge';
 import Actions from '~/components/TokenActions';
 import { CommitTypeName } from '~/constants/commits';
 import { BlockExplorerAddressType } from '~/types/blockExplorers';
@@ -18,7 +17,6 @@ export const QueuedCommitRow = ({
     txnHash,
     type,
     expectedExecution,
-    poolStatus,
 }: QueuedCommitRowProps): JSX.Element => {
     const [pendingUpkeep, setPendingUpkeep] = useState(false);
     const { amount: tokenInAmount, symbol: tokenInSymbol, price: tokenInPrice, isLong: tokenInIslong } = tokenIn;
@@ -27,13 +25,6 @@ export const QueuedCommitRow = ({
     return (
         <TableRow key={txnHash} lined>
             <OverviewTableRowCell>{CommitTypeName[type]}</OverviewTableRowCell>
-            <OverviewTableRowCell>
-                <PoolStatusBadgeContainer>
-                    <div className="ml-2">
-                        <PoolStatusBadge status={poolStatus} />
-                    </div>
-                </PoolStatusBadgeContainer>
-            </OverviewTableRowCell>
             <OverviewTableRowCell>
                 <Amount tokenSymbol={tokenInSymbol} amount={tokenInAmount} />
             </OverviewTableRowCell>

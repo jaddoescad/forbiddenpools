@@ -14,10 +14,7 @@ export interface PoolList {
 }
 
 export interface PoolLists {
-    All: PoolList[];
-    External: PoolList[];
-    Tracer: PoolList;
-    Imported: PoolList;
+    All: StaticPoolInfo[];
 }
 
 export interface PoolListUris {

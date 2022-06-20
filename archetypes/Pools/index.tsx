@@ -91,19 +91,6 @@ export const Browse: React.FC = () => {
         [state.marketFilter, state.leverageFilter, state.search, state.sortBy, tokens],
     );
 
-    const groupedSortedFilteredTokens = useMemo(
-        () =>
-            filteredTokens.reduce((groups, token) => {
-                // @ts-ignore
-                const group = groups[token.marketSymbol] || [];
-                group.push(token);
-                // @ts-ignore
-                groups[token.marketSymbol] = group;
-                return groups;
-            }, []),
-        [filteredTokens],
-    );
-
     const handleMintBurn = useCallback((pool: string, side: SideEnum, commitAction: CommitActionEnum) => {
         console.debug(`
             ${commitAction === CommitActionEnum.mint ? 'Buying/minting ' : 'Burning/selling '}
@@ -142,21 +129,23 @@ export const Browse: React.FC = () => {
                     <FilterSelects state={state} dispatch={dispatch} />
                 </PageTable.Header>
                 {isLoading ? <Styles.Loading /> : null}
-                {Object.keys(groupedSortedFilteredTokens).map((key, index) => {
-                    const dataRows = groupedSortedFilteredTokens[key as any] as BrowseTableRowData[];
+                {
+                    // const dataRows = groupedSortedFilteredTokens[key as any] as BrowseTableRowData[];
                     // sum of grouped pool volume
-                    const oneDayVolume = dataRows.reduce(
-                        (volume, row) => volume.plus(row.oneDayVolume),
-                        new BigNumber(0),
-                    );
+                    // const oneDayVolume = dataRows.reduce(
+                    //     (volume, row) => volume.plus(row.oneDayVolume),
+                    //     new BigNumber(0),
+                    // );
+                }
+                {Object.keys(filteredTokens).map((key, index) => {
                     return (
-                        <Styles.DataRow key={index}>
+                        <Styles.DataRow key={key}>
                             <PoolsTable
-                                rows={dataRows}
+                                rows={filteredTokens[index]}
                                 deltaDenotation={state.deltaDenotation}
                                 onClickMintBurn={handleMintBurn}
                                 showNextRebalance={showNextRebalance}
-                                oneDayVolume={oneDayVolume}
+                                oneDayVolume={(filteredTokens[0].oneDayVolume, new BigNumber(0))}
                             />
                         </Styles.DataRow>
                     );

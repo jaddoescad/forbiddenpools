@@ -1,5 +1,8 @@
+import { doc, setDoc } from 'firebase/firestore';
 import { StaticPoolInfo } from '@tracer-protocol/pools-js';
+import { networkConfig } from '~/constants/networks';
 import { StateSlice } from '~/store/types';
+import { db } from '~/utils/firebase';
 import { getAllPoolLists } from '~/utils/poolLists';
 import { IPoolsSlice } from './types';
 import { StoreState } from '..';
@@ -11,7 +14,10 @@ export const createPoolsSlice: StateSlice<IPoolsSlice> = (set, get) => ({
     },
     importPool: (network, pool) => {
         if (get().poolLists[network]) {
-            set((state) => void state.poolLists[network]?.Imported.pools.push({ address: pool }));
+            setDoc(doc(db, networkConfig[network]?.name, pool), {
+                address: pool,
+            });
+            set((state) => void state.poolLists[network]?.All.push({ address: pool }));
         }
     },
     fetchPoolLists: async (network) => {
@@ -28,7 +34,7 @@ export const createPoolsSlice: StateSlice<IPoolsSlice> = (set, get) => ({
 });
 
 export const selectImportedPools: (state: StoreState) => StaticPoolInfo[] = (state) =>
-    state.web3Slice.network ? state.poolsSlice.poolLists[state.web3Slice.network]?.Imported?.pools ?? [] : [];
+    state.web3Slice.network ? state.poolsSlice.poolLists[state.web3Slice.network]?.All ?? [] : [];
 export const selectFetchPools: (state: StoreState) => IPoolsSlice['fetchPoolLists'] = (state) =>
     state.poolsSlice.fetchPoolLists;
 export const selectImportPool: (state: StoreState) => IPoolsSlice['importPool'] = (state) =>

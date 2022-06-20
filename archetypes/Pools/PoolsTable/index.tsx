@@ -43,26 +43,6 @@ const EffectiveLeverageTip: React.FC = ({ children }) => (
     </StyledTooltip>
 );
 
-const SpotPriceTip: React.FC = ({ children }) => (
-    <StyledTooltip title="The price of the tracked asset before subjecting it to any Data Manipulations.">
-        {children}
-    </StyledTooltip>
-);
-const TracerTip: React.FC = ({ children }) => (
-    <StyledTooltip title="The current token price on Tracer. Please note that the price may change as minting the token is not immediate.">
-        {children}
-    </StyledTooltip>
-);
-
-const IndexPriceTip: React.FC = ({ children }) => (
-    <StyledTooltip title="The value used for settling this market.">{children}</StyledTooltip>
-);
-const BalancerTip: React.FC = ({ children }) => (
-    <StyledTooltip title="The current token price on Balancer. You can buy the Pool Token immediately at this price (slippage may impact final pricing)">
-        {children}
-    </StyledTooltip>
-);
-
 const CommittmentTip: React.FC = ({ children }) => (
     <StyledTooltip title="You must commit your mint or burn before the end of this countdown to have your order filled at the upcoming rebalance.">
         {children}
@@ -153,7 +133,7 @@ export const PoolsTable = ({
     deltaDenotation,
     oneDayVolume,
 }: {
-    rows: BrowseTableRowData[];
+    rows: BrowseTableRowData;
     oneDayVolume: BigNumber;
 } & TProps): JSX.Element => {
     const { account, network = NETWORKS.ARBITRUM } = useStore(selectWeb3Info, shallow);
@@ -173,7 +153,7 @@ export const PoolsTable = ({
                     <tr>
                         <TableHeaderCell
                             className="rounded-xl bg-cool-gray-50 dark:bg-theme-background-secondary"
-                            colSpan={13}
+                            colSpan={14}
                         >
                             <div className="flex justify-between divide-x-[3px] divide-cool-gray-200 text-base dark:divide-cool-gray-900">
                                 <div className="flex pr-10">
@@ -181,25 +161,23 @@ export const PoolsTable = ({
                                         <Logo
                                             className="my-auto mr-3"
                                             size="lg"
-                                            ticker={getBaseAssetFromMarket(rows[0].marketSymbol) as LogoTicker}
+                                            ticker={getBaseAssetFromMarket(rows.marketSymbol) as LogoTicker}
                                         />
                                     </div>
                                     <div className="my-auto">
                                         <div className="font-semibold text-cool-gray-500 dark:text-cool-gray-400">
-                                            {marketSymbolToAssetName[rows[0].marketSymbol] || 'MARKET TICKER'}
+                                            {marketSymbolToAssetName[rows.marketSymbol] || 'MARKET TICKER'}
                                         </div>
-                                        <div className="text-lg font-bold">{rows[0].marketSymbol}</div>
+                                        <div className="text-lg font-bold">{rows.marketSymbol}</div>
                                     </div>
                                 </div>
                                 <div className="px-10">
-                                    <SpotPriceTip>
-                                        <div className="font-semibold text-cool-gray-500 dark:text-cool-gray-400">
-                                            SPOT PRICE
-                                        </div>
-                                    </SpotPriceTip>
+                                    <div className="font-semibold text-cool-gray-500 dark:text-cool-gray-400">
+                                        SPOT PRICE
+                                    </div>
                                     <div className="font-bold">
-                                        {marketSpotPrices[rows[0].marketSymbol]
-                                            ? toApproxCurrency(marketSpotPrices[rows[0].marketSymbol])
+                                        {marketSpotPrices[rows.marketSymbol]
+                                            ? toApproxCurrency(marketSpotPrices[rows.marketSymbol])
                                             : '-'}
                                     </div>
                                 </div>
@@ -208,7 +186,7 @@ export const PoolsTable = ({
                                         ORACLE
                                     </div>
                                     <a
-                                        href={getPriceFeedUrl(rows[0].marketSymbol)}
+                                        href={getPriceFeedUrl(rows.marketSymbol)}
                                         target="_blank"
                                         rel="noreferrer"
                                         className="flex items-center"
@@ -224,12 +202,6 @@ export const PoolsTable = ({
                                     </div>
                                     <div className="font-bold">{toApproxCurrency(oneDayVolume)}</div>
                                 </div>
-                                <div className="px-10">
-                                    <div className="font-semibold text-cool-gray-500 dark:text-cool-gray-400">
-                                        NUMBER OF POOLS
-                                    </div>
-                                    <div className="font-bold">{rows.length}</div>
-                                </div>
                             </div>
                         </TableHeaderCell>
                     </tr>
@@ -239,9 +211,10 @@ export const PoolsTable = ({
                         <TableHeaderCell className="w-1/12 2xl:whitespace-nowrap">
                             Leverage / Collateral
                         </TableHeaderCell>
+                        <TableHeaderCell className="w-1/12 2xl:whitespace-nowrap">Status</TableHeaderCell>
                         <TableHeaderCell className="w-1/12 whitespace-nowrap">
                             {/* TODO: do something else when we have a pool using a non-USDC underlying feed */}
-                            <IndexPriceTip>{'INDEX PRICE (USD)'}</IndexPriceTip>
+                            {'INDEX PRICE (USD)'}
                         </TableHeaderCell>
                         <TableHeaderCell className="w-1/12 whitespace-nowrap">{'TVL (USD)'}</TableHeaderCell>
                         <TableHeaderCell className={showNextRebalance ? 'w-1/12' : 'w-3/12'}>
@@ -280,7 +253,7 @@ export const PoolsTable = ({
                     </tr>
                     <tr>
                         {/* Pools  Cols */}
-                        <TableHeaderCell colSpan={showNextRebalance ? 5 : 4} />
+                        <TableHeaderCell colSpan={showNextRebalance ? 6 : 5} />
 
                         {/* Token Cols */}
                         <TableHeaderCell className="border-l-2 border-theme-background" size="sm-x" colSpan={2} />
@@ -291,34 +264,26 @@ export const PoolsTable = ({
                             <div className="capitalize text-cool-gray-400">{'Losses'}</div>
                         </TableHeaderCell>
                         <TableHeaderCell className="text-cool-gray-400" size="sm-x">
-                            <TracerTip>
-                                <div className="capitalize text-cool-gray-400">{'Tracer'}</div>
-                            </TracerTip>
+                            <div className="capitalize text-cool-gray-400">{'Tracer'}</div>
                         </TableHeaderCell>
                         {showNextRebalance ? (
                             <TableHeaderCell className="text-cool-gray-400" size="sm-x">
-                                <BalancerTip>
-                                    <div className="capitalize text-cool-gray-400">{'Balancer'}</div>
-                                </BalancerTip>
+                                <div className="capitalize text-cool-gray-400">{'Balancer'}</div>
                             </TableHeaderCell>
                         ) : null}
                         <TableHeaderCell colSpan={showNextRebalance && !!account ? 2 : 1} />
                     </tr>
                 </TableHeader>
                 <tbody>
-                    {rows.map((pool) => {
-                        return (
-                            <PoolRow
-                                pool={pool}
-                                onClickMintBurn={onClickMintBurn}
-                                onClickShowPoolDetailsModal={handlePoolDetailsClick}
-                                showNextRebalance={showNextRebalance}
-                                key={pool.address}
-                                account={account}
-                                deltaDenotation={deltaDenotation}
-                            />
-                        );
-                    })}
+                    <PoolRow
+                        pool={rows}
+                        onClickMintBurn={onClickMintBurn}
+                        onClickShowPoolDetailsModal={handlePoolDetailsClick}
+                        showNextRebalance={showNextRebalance}
+                        key={rows.address}
+                        account={account}
+                        deltaDenotation={deltaDenotation}
+                    />
                 </tbody>
             </Table>
             <PoolDetailsModal
@@ -346,16 +311,16 @@ const PoolRow: React.FC<
             <TableRow lined>
                 {/** Pool rows */}
                 <TableRowCell rowSpan={2}>
-                    <div className="mb-1 flex font-bold">
-                        <PoolStatusBadgeContainer>
-                            <div className="mr-2 text-lg">{pool.leverage}</div>
-                            <PoolStatusBadge status={pool.poolStatus} />
-                        </PoolStatusBadgeContainer>
-                    </div>
+                    <div className="font-bold">{pool.leverage}</div>
                     <div className="flex items-center">
                         {pool.collateralAsset}
                         <InfoIcon onClick={() => onClickShowPoolDetailsModal(pool)} />
                     </div>
+                </TableRowCell>
+                <TableRowCell rowSpan={2}>
+                    <PoolStatusBadgeContainer>
+                        <PoolStatusBadge status={pool.poolStatus} />
+                    </PoolStatusBadgeContainer>
                 </TableRowCell>
                 <TableRowCell rowSpan={2}>
                     {showNextRebalance ? (
@@ -694,7 +659,7 @@ const TokenRows: React.FC<
                         </Button>
                         <Actions
                             token={{
-                                address: tokenInfo.address,
+                                address: poolAddress,
                                 decimals: decimals,
                                 symbol: tokenInfo.symbol,
                             }}

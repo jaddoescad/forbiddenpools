@@ -76,6 +76,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
                     ref={ref}
                     type="text"
                     name="email"
+                    id="email"
                     autoComplete="off"
                     value={value}
                     placeholder={placeholder}

@@ -3,4 +3,3 @@ export * from './staking';
 export * from './networks';
 export * from './general';
 export * from './pools';
-export * from './seo';

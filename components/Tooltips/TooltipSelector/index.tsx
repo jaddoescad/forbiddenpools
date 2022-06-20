@@ -6,7 +6,6 @@ import {
     PowerLeverageTip,
     DeprecatedPoolMintCommitTooltip,
     DeprecatedPoolFlipCommitTooltip,
-    PortfolioFlipTooltip,
 } from '../';
 
 export enum TooltipKeys {
@@ -15,7 +14,6 @@ export enum TooltipKeys {
     PowerLeverage = 'power-leverage',
     DeprecatedPoolMintCommit = 'deprecated-pool-mint-commit',
     DeprecatedPoolFlipCommit = 'deprecated-pool-flip-commit',
-    PortfolioFlip = 'portfolio-flip',
 }
 
 export type TooltipSelectorProps = {
@@ -39,9 +37,6 @@ const TooltipSelector: React.FC<{ tooltip: TooltipSelectorProps }> = ({ tooltip,
 
         case TooltipKeys.DeprecatedPoolFlipCommit:
             return <DeprecatedPoolFlipCommitTooltip>{children}</DeprecatedPoolFlipCommitTooltip>;
-
-        case TooltipKeys.PortfolioFlip:
-            return <PortfolioFlipTooltip>{children}</PortfolioFlipTooltip>;
 
         default:
             return <StyledTooltip title={tooltip.content}>{children}</StyledTooltip>;

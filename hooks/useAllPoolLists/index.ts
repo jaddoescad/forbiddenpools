@@ -3,7 +3,6 @@ import { StaticPoolInfo } from '@tracer-protocol/pools-js';
 import { useStore } from '~/store/main';
 import { StoreState } from '~/store/types';
 import { selectNetwork } from '~/store/Web3Slice';
-import { flattenAllPoolLists } from '~/utils/poolLists';
 
 // wrapper hook to memoize fetching of poolLists
 export const useAllPoolLists = (): StaticPoolInfo[] => {
@@ -17,8 +16,8 @@ export const useAllPoolLists = (): StaticPoolInfo[] => {
 
     useEffect(() => {
         if (!!poolLists) {
-            console.count('Flattening pools list');
-            ref.current = flattenAllPoolLists(poolLists);
+            console.log('Flattening pools list', poolLists);
+            ref.current = poolLists.All;
             forceUpdate();
         }
     }, [poolLists]);
