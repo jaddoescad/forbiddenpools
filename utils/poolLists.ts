@@ -8,7 +8,7 @@ import { db } from '~/utils/firebase';
  */
 export const getAllPoolLists = async (network: KnownNetwork): Promise<any> => {
     const tracerList: StaticPoolInfo[] = [];
-    const poolsRef = collection(db, networkConfig[network]?.name);
+    const poolsRef = collection(db, networkConfig[network]?.name || 'Arbitrum');
     const q = query(poolsRef);
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
